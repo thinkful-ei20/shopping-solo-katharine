@@ -17,50 +17,54 @@ const STORE = {
 // User can edit the title of an item
 //COMPLETED set up event listener on js-shopping-item (USE EVENT DELEGATION)
 // COMPLETED if clicked, change the HTML to be a textbox and submit button
-//Why can't I type in my text box?
-//Set up a listener for the created textbox
-//store the value from the created textbox
+// AAAARGH Why can't I type in my text box?
+//Completed? Set up a listener for the created textbox
+//store the value from the created textbox, at the correct object in the array
 // change the value at products.name for the data-item-index
 // rerender the page
 
 function changeItemTitle() {
+  //when item-name is clicked, get the item's index and change the title-text to the HTML string contained in makeTextBoxButton; start a listener on that new button
   $('.js-shopping-list').on('click', '.js-shopping-item', event => {
 
     let clickedElement = event.currentTarget;
     const clickedIndex = getItemIndexFromElement(clickedElement);
-    $(clickedElement).html(makeTextBoxButton());
+    const htmlToChange = makeTextBoxButton();
+    $(clickedElement).html(htmlToChange);
     newBoxListener();
   });
 }
 
 
 function makeTextBoxButton() {
-  // return 'hamsandwich';
+// the textbox created here won't let me type in it - why?
+
   return `  
        <form>
       <input type="text" name="renamer" class="js-renamer" placeholder="change name here">
       <button type="button" class="js-renamebutton">Confirm name change</button>
     </form>
-     `;
-    
-     
-
-     
+     `;  
 }
 
 
 function newBoxListener () {
+  //listen to the new button, get index for clicked item and store value from text box, pass to renamer
   $('.js-renamebutton').click(function () { 
-     const changedTitle = $('.js-renamer').val();
-     titleRenamer(changedTitle);
+    const buttonPressed = event.currentTarget;
+    const changedItemIndex = getItemIndexFromElement(buttonPressed);
+    const changedTitle = 'ham sandwich';
+    // const changedTitle = $('.js-renamer').val();
+    TitleRenamer(changedTitle, changedItemIndex);
   });
-  
-}
+ }
 
-function titleRenamer() {
-  
-}
+function TitleRenamer (newTitle, index) {
+  //need some javascript to update products.name to = newTitle at [index]
 
+  renderShoppingList();
+
+}
 
 
 function hideCheckedItems() {
@@ -169,7 +173,7 @@ function handleNewItemSubmit() {
 
 function toggleCheckedForListItem(itemIndex) {
   console.log('Toggling checked property for item at index ' + itemIndex);
-  STORE[itemIndex].checked = !STORE[itemIndex].checked;
+  STORE.products[itemIndex].checked = !STORE.products[itemIndex].checked;
 }
 
 
@@ -177,7 +181,7 @@ function getItemIndexFromElement(item) {
   const itemIndexString = $(item)
     .closest('.js-item-index-element')
     .attr('data-item-index');
-    console.log(itemIndexString);
+  console.log(itemIndexString);
   return parseInt(itemIndexString, 10);
 }
 
