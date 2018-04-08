@@ -10,27 +10,65 @@ const STORE = {
   ],
 
   hideCheckedItems: false,
-
+  searchActivated: false,
 };
 
 
+// User can edit the title of an item
+//COMPLETED set up event listener on js-shopping-item (USE EVENT DELEGATION)
+// COMPLETED if clicked, change the HTML to be a textbox and submit button
+//Why can't I type in my text box?
+//Set up a listener for the created textbox
+//store the value from the created textbox
+// change the value at products.name for the data-item-index
+// rerender the page
+
+function changeItemTitle() {
+  $('.js-shopping-list').on('click', '.js-shopping-item', event => {
+
+    let clickedElement = event.currentTarget;
+    const clickedIndex = getItemIndexFromElement(clickedElement);
+    $(clickedElement).html(makeTextBoxButton());
+    newBoxListener();
+  });
+}
 
 
-// User can press a switch/checkbox to toggle between displaying all items or displaying only items that are unchecked
-// COMPLETE create listening event on that toggle
-//COMPLETE create a filtered array for store.checked === true
-// COMPLETE i want to map store and return an array with only checked = true
-// if that checkbox is checked, pass filtered list to renderShoppingList;
+function makeTextBoxButton() {
+  // return 'hamsandwich';
+  return `  
+       <form>
+      <input type="text" name="renamer" class="js-renamer" placeholder="change name here">
+      <button type="button" class="js-renamebutton">Confirm name change</button>
+    </form>
+     `;
+    
+     
+
+     
+}
+
+
+function newBoxListener () {
+  $('.js-renamebutton').click(function () { 
+     const changedTitle = $('.js-renamer').val();
+     titleRenamer(changedTitle);
+  });
+  
+}
+
+function titleRenamer() {
+  
+}
+
 
 
 function hideCheckedItems() {
 
   $('.js-filter-by-checked').on('click', function doSomething() {
     STORE.hideCheckedItems = !STORE.hideCheckedItems;
-
-    console.log('foobar!');
-    //change property of hide checked items
     renderShoppingList();
+   
   });
  
 
@@ -38,10 +76,17 @@ function hideCheckedItems() {
 
 
 
-// User can type in a search term and the displayed list will be filtered by item names only containing that search term
-// User can edit the title of an item
-
-
+function handleSearchButtonClicked() {
+  $('#js-shopping-list-form').on('click','.js-searchbutton', event => {
+    event.preventDefault();
+    STORE.searchActivated = !STORE.searchActivated;
+    console.log('search has been pressed');
+    renderShoppingList();
+  });
+ 
+  
+  
+}
 
 
 function generateItemElement(item, itemIndex, template) {
@@ -61,7 +106,7 @@ function generateItemElement(item, itemIndex, template) {
 
 
 function generateShoppingItemsString(shoppingList) {
-  console.log('Generating shopping list element');
+  // console.log('Generating shopping list element');
 
   const items = shoppingList.map((item, index) => generateItemElement(item, index));
   
@@ -71,7 +116,7 @@ function generateShoppingItemsString(shoppingList) {
 
 function renderShoppingList() {
   // render the shopping list in the DOM
-  console.log('`renderShoppingList` ran');
+  // console.log('`renderShoppingList` ran');
   const shoppingListItemsString = generateShoppingItemsString(whatToRender());
 
   // insert that HTML into the DOM
@@ -80,33 +125,39 @@ function renderShoppingList() {
 
 
 
-    //add code to render handle hideCheckedItems;
-      //if hideCheckedItems false, pass products to generate items
-      // if hideCheckedItems true, pass ONLY products with property false to generateItems
-
+  //add code to render handle hideCheckedItems;
+  //if hideCheckedItems false, pass products to generate items
+  // if hideCheckedItems true, pass ONLY products with property false to generateItems
+  $('.js-shopping-list-search').val('');
 }
 
 function whatToRender() {
+  if(STORE.searchActivated === true) {
+ 
+    let searchValue = $('.js-shopping-list-search').val();
+    // let searchValue ='apples';
+    return STORE['products'].filter(items =>items.name === searchValue);
+  }
+
   if(STORE.hideCheckedItems === false)
   {
     return STORE.products;
   }
 
   else {
-    return STORE["products"].filter(items => items.checked === false);
- }
-
+    return STORE['products'].filter(items => items.checked === false);
+  }
 
 }
 
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.push({name: itemName, checked: false});
+  STORE['products'].push({name: itemName, checked: false});
 }
 
 function handleNewItemSubmit() {
-  $('#js-shopping-list-form').submit(function(event) {
+  $('#js-shopping-list-form').on('click', '.js-add-button', function(event) {
     event.preventDefault();
     console.log('`handleNewItemSubmit` ran');
     const newItemName = $('.js-shopping-list-entry').val();
@@ -126,12 +177,13 @@ function getItemIndexFromElement(item) {
   const itemIndexString = $(item)
     .closest('.js-item-index-element')
     .attr('data-item-index');
+    console.log(itemIndexString);
   return parseInt(itemIndexString, 10);
 }
 
 function handleItemCheckClicked() {
   $('.js-shopping-list').on('click', '.js-item-toggle', event => {
-    console.log('`handleItemCheckClicked` ran');
+    // console.log('`handleItemCheckClicked` ran');
     const itemIndex = getItemIndexFromElement(event.currentTarget);
     toggleCheckedForListItem(itemIndex);
     renderShoppingList();
@@ -149,7 +201,7 @@ function deleteListItem(itemIndex) {
   // of 1. this has the effect of removing the desired item, and shifting all of the
   // elements to the right of `itemIndex` (if any) over one place to the left, so we
   // don't have an empty space in our list.
-  STORE["products"].splice(itemIndex, 1);
+  STORE['products'].splice(itemIndex, 1);
 }
 
 
@@ -157,7 +209,6 @@ function handleDeleteItemClicked() {
   // like in `handleItemCheckClicked`, we use event delegation
   $('.js-shopping-list').on('click', '.js-item-delete', event => {
     // get the index of the item in STORE
-    console.log('foobar!');
     const itemIndex = getItemIndexFromElement(event.currentTarget);
     // delete the item
     deleteListItem(itemIndex);
@@ -176,6 +227,8 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   hideCheckedItems();
+  handleSearchButtonClicked();
+  changeItemTitle();
 }
 
 // when the page loads, call `handleShoppingList`

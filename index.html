@@ -14,9 +14,12 @@
         <form id="js-shopping-list-form">
             <label for="shopping-list-entry">Add an item</label>
             <input type="text" name="shopping-list-entry" class="js-shopping-list-entry" placeholder="e.g., broccoli">
-            <button type="submit">Add item</button><br>
+            <button type="submit" class='js-add-button'>Add item</button><br>
             <label for="displayCheckedCheck">Check this box to display only incomplete items.</label>
             <input id="checkBox" type="checkbox" name="displayCheckedCheck" class="js-filter-by-checked">
+            <br>
+            <input type="text" name="shopping-list-search" class="js-shopping-list-search" placeholder="e.g., search for fruit of choosing">
+            <button type="button" class="js-searchbutton">Search</button><br>
         </form>
         <ul class="shopping-list js-shopping-list">
         </ul>
