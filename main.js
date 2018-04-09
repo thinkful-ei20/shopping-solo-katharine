@@ -22,26 +22,31 @@ const STORE = {
 //store the value from the created textbox, at the correct object in the array
 // change the value at products.name for the data-item-index
 // rerender the page
+// look at using local storage - persistant data
+
 
 function changeItemTitle() {
   //when item-name is clicked, get the item's index and change the title-text to the HTML string contained in makeTextBoxButton; start a listener on that new button
   $('.js-shopping-list').on('click', '.js-shopping-item', event => {
 
     let clickedElement = event.currentTarget;
+    let elementToChange= $(clickedElement).parent('.js-item-index-element');
+    console.log(elementToChange, 'foobar!');
     const clickedIndex = getItemIndexFromElement(clickedElement);
-    const htmlToChange = makeTextBoxButton();
-    $(clickedElement).html(htmlToChange);
+    const htmlToChange = makeTextBoxButton(clickedIndex);
+
+    //TARGET THE PARENT ELEMENT AND REMOVE THE SPAN SO THE LISTENER DOESN'T CONTINUE LISTENING
+    $(elementToChange).html(htmlToChange);
     newBoxListener();
   });
 }
 
 
-function makeTextBoxButton() {
-// the textbox created here won't let me type in it - why?
-
+function makeTextBoxButton(index) {
+  const oldTitle = STORE.products[index].name; 
   return `  
        <form>
-      <input type="text" name="renamer" class="js-renamer" placeholder="change name here">
+      <input type="text" name="renamer" class="js-renamer" placeholder=" Changing \"${oldTitle} ">
       <button type="button" class="js-renamebutton">Confirm name change</button>
     </form>
      `;  
@@ -53,15 +58,15 @@ function newBoxListener () {
   $('.js-renamebutton').click(function () { 
     const buttonPressed = event.currentTarget;
     const changedItemIndex = getItemIndexFromElement(buttonPressed);
-    const changedTitle = 'ham sandwich';
-    // const changedTitle = $('.js-renamer').val();
+    const changedTitle = $('.js-renamer').val();
     TitleRenamer(changedTitle, changedItemIndex);
   });
  }
 
 function TitleRenamer (newTitle, index) {
-  //need some javascript to update products.name to = newTitle at [index]
 
+  STORE.products[index].name = newTitle;
+  
   renderShoppingList();
 
 }
